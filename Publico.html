@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Workshop 17 — Participa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050d1a;
+            --surface: #0d1f35;
+            --border: #1e3a5a;
+            --accent: #00e5ff;
+            --accent2: #ff6b35;
+            --accent3: #39ff14;
+            --solar: #ffd700;
+            --wind: #00e5ff;
+            --hydro: #4fc3f7;
+            --text: #e8f4f8;
+            --muted: #5a7a9a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Syne',sans-serif;
+            min-height: 100vh;
+            max-width: 480px;
+            margin: 0 auto;
+            padding-bottom: 100px
+        }
+
+            body::before {
+                content: '';
+                position: fixed;
+                inset: 0;
+                background-image: linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);
+                background-size: 40px 40px;
+                pointer-events: none;
+                z-index: 0
+            }
+
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(5,13,26,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            max-width: 480px;
+            margin: 0 auto
+        }
+
+        .topbar-title {
+            font-family: 'Space Mono',monospace;
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-transform: uppercase
+        }
+
+        .live-dot {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Space Mono',monospace;
+            font-size: 10px;
+            color: var(--accent3);
+            letter-spacing: 1px
+        }
+
+            .live-dot::before {
+                content: '';
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: var(--accent3);
+                animation: blink 1.2s ease-in-out infinite
+            }
+
+        @keyframes blink {
+            0%,100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.2
+            }
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(5,13,26,0.97);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            display: none;
+            max-width: 480px;
+            margin: 0 auto
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 4px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: var(--muted);
+            font-family: 'Syne',sans-serif;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: color 0.2s
+        }
+
+            .nav-item .icon {
+                font-size: 20px
+            }
+
+            .nav-item.active {
+                color: var(--accent)
+            }
+
+        .screen {
+            display: none;
+            padding: 80px 20px 20px;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.3s ease
+        }
+
+            .screen.active {
+                display: block
+            }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+        /* WELCOME */
+        .welcome-hero {
+            text-align: center;
+            padding: 24px 0 32px
+        }
+
+        .w-badge {
+            display: inline-block;
+            font-family: 'Space Mono',monospace;
+            font-size: 10px;
+            color: var(--accent);
+            border: 1px solid rgba(0,229,255,0.3);
+            padding: 5px 14px;
+            border-radius: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px
+        }
+
+        .w-title {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px
+        }
+
+            .w-title span {
+                color: var(--accent);
+                display: block
+            }
+
+        .w-sub {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 32px
+        }
+
+        .name-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px
+        }
+
+        .name-label {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--muted);
+            letter-spacing: 0.5px
+        }
+
+        .name-input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: var(--text);
+            font-family: 'Syne',sans-serif;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s
+        }
+
+            .name-input:focus {
+                border-color: var(--accent)
+            }
+
+            .name-input::placeholder {
+                color: var(--muted)
+            }
+
+        .join-btn {
+            width: 100%;
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-family: 'Syne',sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 14px;
+            transition: all 0.2s
+        }
+
+            .join-btn:active {
+                transform: scale(0.97)
+            }
+
+            .join-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed
+            }
+        /* AGENDA */
+        .sec-tag {
+            font-family: 'Space Mono',monospace;
+            font-size: 10px;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px
+        }
+
+        .screen-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            letter-spacing: -0.3px
+        }
+
+        .screen-sub {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 24px;
+            line-height: 1.5
+        }
+
+        .agenda-item {
+            display: flex;
+            gap: 16px;
+            padding: 18px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start
+        }
+
+        .ag-time {
+            font-family: 'Space Mono',monospace;
+            font-size: 10px;
+            color: var(--muted);
+            min-width: 52px;
+            padding-top: 3px;
+            letter-spacing: 0.5px
+        }
+
+        .ag-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            border: 1px solid var(--border);
+            flex-shrink: 0
+        }
+
+        .ag-name {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 3px
+        }
+
+        .ag-desc {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.5
+        }
+
+        .ag-tag {
+            display: inline-block;
+            font-size: 9px;
+            font-family: 'Space Mono',monospace;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-top: 6px;
+            letter-spacing: 1px
+        }
+        /* CONTENT */
+        .content-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 14px;
+            position: relative;
+            overflow: hidden
+        }
+
+            .content-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 2px
+            }
+
+        .cc-solar::before {
+            background: var(--solar)
+        }
+
+        .cc-wind::before {
+            background: var(--wind)
+        }
+
+        .cc-hydro::before {
+            background: var(--hydro)
+        }
+
+        .cc-climate::before {
+            background: var(--accent2)
+        }
+
+        .cc-scenarios::before {
+            background: #b39ddb
+        }
+
+        .cc-adapt::before {
+            background: var(--accent3)
+        }
+
+        .cc-icon {
+            font-size: 28px;
+            margin-bottom: 10px
+        }
+
+        .cc-title {
+            font-size: 17px;
+            font-weight: 800;
+            margin-bottom: 8px
+        }
+
+        .cc-body {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.7
+        }
+
+        .cc-stat {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border)
+        }
+
+        .stat-n {
+            font-family: 'Space Mono',monospace;
+            font-size: 17px;
+            font-weight: 700
+        }
+
+        .stat-l {
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 2px
+        }
+        /* QUIZ */
+        .score-bar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px
+        }
+
+        .score-label {
+            font-size: 13px;
+            color: var(--muted)
+        }
+
+        .score-val {
+            font-family: 'Space Mono',monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent3)
+        }
+
+        .question-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px
+        }
+
+        .q-num {
+            font-family: 'Space Mono',monospace;
+            font-size: 10px;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px
+        }
+
+        .q-text {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.4
+        }
+
+        .q-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px
+        }
+
+        .q-opt {
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Syne',sans-serif;
+            color: var(--text);
+            text-align: left;
+            width: 100%
+        }
+
+            .q-opt:hover {
+                border-color: rgba(0,229,255,0.4)
+            }
+
+            .q-opt.correct {
+                border-color: var(--accent3);
+                background: rgba(57,255,20,0.1);
+                color: var(--accent3)
+            }
+
+            .q-opt.wrong {
+                border-color: var(--accent2);
+                background: rgba(255,107,53,0.1);
+                color: var(--accent2)
+            }
+
+        .opt-letter {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            border: 1px solid currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Mono',monospace;
+            font-size: 11px;
+            flex-shrink: 0
+        }
+
+        .q-feedback {
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            display: none;
+            line-height: 1.5
+        }
+
+            .q-feedback.show {
+                display: block
+            }
+
+            .q-feedback.correct {
+                background: rgba(57,255,20,0.1);
+                color: var(--accent3);
+                border: 1px solid rgba(57,255,20,0.3)
+            }
+
+            .q-feedback.wrong {
+                background: rgba(255,107,53,0.1);
+                color: var(--accent2);
+                border: 1px solid rgba(255,107,53,0.3)
+            }
+        /* HOT TAKES */
+        .take-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px
+        }
+
+        .take-q {
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 20px
+        }
+
+        .take-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px
+        }
+
+        .take-btn {
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 8px;
+            text-align: center;
+            cursor: pointer;
+            background: var(--bg);
+            transition: all 0.2s;
+            font-family: 'Syne',sans-serif;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px
+        }
+
+            .take-btn:active {
+                transform: scale(0.95)
+            }
+
+            .take-btn .t-icon {
+                font-size: 24px
+            }
+
+            .take-btn .t-label {
+                font-size: 11px;
+                font-weight: 700
+            }
+
+            .take-btn.agree {
+                border-color: var(--accent3);
+                background: rgba(57,255,20,0.08)
+            }
+
+            .take-btn.disagree {
+                border-color: var(--accent2);
+                background: rgba(255,107,53,0.08)
+            }
+
+            .take-btn.neutral {
+                border-color: #b39ddb;
+                background: rgba(179,157,219,0.08)
+            }
+
+            .take-btn.voted {
+                opacity: 0.4;
+                pointer-events: none
+            }
+
+        .take-voted-msg {
+            text-align: center;
+            font-family: 'Space Mono',monospace;
+            font-size: 11px;
+            color: var(--accent3);
+            margin-top: 14px;
+            display: none;
+            letter-spacing: 1px
+        }
+
+            .take-voted-msg.show {
+                display: block
+            }
+        /* VOTE */
+        .vote-card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s
+        }
+
+            .vote-card:active {
+                transform: scale(0.97)
+            }
+
+            .vote-card.sel-solar {
+                border-color: var(--solar);
+                background: rgba(255,215,0,0.06)
+            }
+
+            .vote-card.sel-wind {
+                border-color: var(--wind);
+                background: rgba(0,229,255,0.06)
+            }
+
+            .vote-card.sel-hydro {
+                border-color: var(--hydro);
+                background: rgba(79,195,247,0.06)
+            }
+
+        .vote-emoji {
+            font-size: 48px;
+            margin-bottom: 10px
+        }
+
+        .vote-name {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 4px
+        }
+
+        .vote-hint {
+            font-size: 13px;
+            color: var(--muted)
+        }
+
+        .voted-confirm {
+            background: rgba(57,255,20,0.1);
+            border: 1px solid rgba(57,255,20,0.3);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            color: var(--accent3);
+            font-weight: 700;
+            margin-top: 20px;
+            display: none;
+            font-size: 15px
+        }
+
+            .voted-confirm.show {
+                display: block
+            }
+    </style>
+</head>
+<body>
+
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  // 🔧 SUBSTITUI PELOS VALORES DO TEU PROJETO FIREBASE
+  const firebaseConfig = {
+      apiKey: "AIzaSyCqg6SCW2_MsOUtNkSSg2XEln36p4XF2tU",
+      authDomain: "workshop17-energia.firebaseapp.com",
+      databaseURL: "https://workshop17-energia-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "workshop17-energia",
+      storageBucket: "workshop17-energia.firebasestorage.app",
+      messagingSenderId: "382660776390",
+      appId: "1:382660776390:web:01eb54367c27be2d1962c7"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  window._db = db;
+  window._ref = ref;
+  window._set = set;
+  window._fbReady = true;
+  document.dispatchEvent(new Event('fbReady'));
+    </script>
+
+    <div class="topbar">
+        <div class="topbar-title">W17 // Energia & Clima</div>
+        <div class="live-dot">AO VIVO</div>
+    </div>
+
+    <div class="screen active" id="s-welcome">
+        <div class="welcome-hero">
+            <div class="w-badge">Workshop 17</div>
+            <div class="w-title">Energia<span>& Clima</span></div>
+            <div class="w-sub">Bem-vindo(a)! Vais participar ao vivo.<br>Introduz o teu nome para começar.</div>
+        </div>
+        <div class="name-card">
+            <div class="name-label">O teu nome</div>
+            <input class="name-input" id="nameInput" type="text" placeholder="Ex: João Silva" maxlength="30">
+            <button class="join-btn" id="joinBtn" onclick="joinWorkshop()">Entrar no Workshop →</button>
+        </div>
+    </div>
+
+    <div class="screen" id="s-agenda">
+        <div class="sec-tag">Plano da sessão</div>
+        <div class="screen-title">Cronograma</div>
+        <div class="screen-sub">35 minutos de workshop interativo</div>
+        <div class="agenda-item"><div class="ag-time">0–3m</div><div class="ag-icon" style="background:rgba(0,229,255,0.1);border-color:rgba(0,229,255,0.3)">🚀</div><div><div class="ag-name">Introdução</div><div class="ag-desc">Apresentação do tema e estrutura</div><span class="ag-tag" style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.2);color:var(--accent)">INÍCIO</span></div></div>
+        <div class="agenda-item"><div class="ag-time">3–8m</div><div class="ag-icon" style="background:rgba(255,107,53,0.1);border-color:rgba(255,107,53,0.3)">🔥</div><div><div class="ag-name">Hot Takes</div><div class="ag-desc">Concordas ou não? Vota aqui no telemóvel</div><span class="ag-tag" style="background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.2);color:var(--accent2)">INTERATIVO</span></div></div>
+        <div class="agenda-item"><div class="ag-time">8–18m</div><div class="ag-icon" style="background:rgba(179,157,219,0.1);border-color:rgba(179,157,219,0.3)">📡</div><div><div class="ag-name">Briefing Técnico + Quiz</div><div class="ag-desc">Teoria + quiz simultâneo no telemóvel</div><span class="ag-tag" style="background:rgba(179,157,219,0.1);border:1px solid rgba(179,157,219,0.2);color:#b39ddb">TEORIA</span></div></div>
+        <div class="agenda-item"><div class="ag-time">18–28m</div><div class="ag-icon" style="background:rgba(57,255,20,0.1);border-color:rgba(57,255,20,0.3)">🔬</div><div><div class="ag-name">Missão por Tecnologia</div><div class="ag-desc">Análise de dados em grupo</div><span class="ag-tag" style="background:rgba(57,255,20,0.1);border:1px solid rgba(57,255,20,0.2);color:var(--accent3)">GRUPO</span></div></div>
+        <div class="agenda-item"><div class="ag-time">28–33m</div><div class="ag-icon" style="background:rgba(255,215,0,0.1);border-color:rgba(255,215,0,0.3)">🎙️</div><div><div class="ag-name">Pitch 60s + Votação Final</div><div class="ag-desc">Vota na tecnologia mais resiliente!</div><span class="ag-tag" style="background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);color:var(--solar)">VOTAÇÃO</span></div></div>
+    </div>
+
+    <div class="screen" id="s-conteudo">
+        <div class="sec-tag">Para estudar</div><div class="screen-title">Conteúdo</div><div class="screen-sub">Informação teórica de suporte</div>
+        <div class="content-card cc-climate"><div class="cc-icon">🌡️</div><div class="cc-title">Alterações Climáticas</div><div class="cc-body">O efeito de estufa intensificado altera temperatura, precipitação e padrões de vento. Portugal está entre os países europeus mais vulneráveis.</div><div class="cc-stat"><div><div class="stat-n" style="color:var(--accent2)">+1.5°C</div><div class="stat-l">Meta Paris</div></div><div><div class="stat-n" style="color:var(--accent2)">+3.5°C</div><div class="stat-l">Cenário RCP 8.5</div></div></div></div>
+        <div class="content-card cc-scenarios"><div class="cc-icon">📊</div><div class="cc-title">Cenários RCP</div><div class="cc-body">RCP 2.6 = baixas emissões. RCP 4.5 = intermédio. RCP 8.5 = pior caso sem mitigação.</div><div class="cc-stat"><div><div class="stat-n" style="color:#39ff14">RCP 2.6</div><div class="stat-l">Baixas emissões</div></div><div><div class="stat-n" style="color:#ff6b35">RCP 8.5</div><div class="stat-l">Altas emissões</div></div></div></div>
+        <div class="content-card cc-solar"><div class="cc-icon">☀️</div><div class="cc-title">Energia Solar</div><div class="cc-body">Mais irradiação, mas temperatura reduz eficiência dos painéis (~0.5%/°C). Trade-off central para o futuro.</div><div class="cc-stat"><div><div class="stat-n" style="color:var(--solar)">+5–10%</div><div class="stat-l">Irradiação</div></div><div><div class="stat-n" style="color:var(--accent2)">−0.5%/°C</div><div class="stat-l">Eficiência</div></div></div></div>
+        <div class="content-card cc-wind"><div class="cc-icon">💨</div><div class="cc-title">Energia Eólica</div><div class="cc-body">Redução de 5–15% nas velocidades médias do vento no interior. Offshore mantém maior resiliência.</div><div class="cc-stat"><div><div class="stat-n" style="color:var(--wind)">−5–15%</div><div class="stat-l">Velocidade vento</div></div><div><div class="stat-n" style="color:var(--wind)">↑ Offshore</div><div class="stat-l">Potencial costeiro</div></div></div></div>
+        <div class="content-card cc-hydro"><div class="cc-icon">💧</div><div class="cc-title">Energia Hídrica</div><div class="cc-body">Precipitação reduz-se 20–30%. Portugal pode perder até 25% da produção hídrica até 2050.</div><div class="cc-stat"><div><div class="stat-n" style="color:var(--hydro)">−20–30%</div><div class="stat-l">Precipitação</div></div><div><div class="stat-n" style="color:var(--hydro)">−25%</div><div class="stat-l">Produção hídrica</div></div></div></div>
+        <div class="content-card cc-adapt"><div class="cc-icon">🛡️</div><div class="cc-title">Adaptação</div><div class="cc-body">Painéis bifaciais, turbinas de baixa velocidade, baterias, gestão preditiva de reservatórios.</div><div class="cc-stat"><div><div class="stat-n" style="color:var(--accent3)">2050</div><div class="stat-l">Horizonte</div></div><div><div class="stat-n" style="color:var(--accent3)">80%</div><div class="stat-l">Meta renováveis PT</div></div></div></div>
+    </div>
+
+    <div class="screen" id="s-quiz">
+        <div class="sec-tag">Testa os teus conhecimentos</div><div class="screen-title">Quiz</div>
+        <div class="score-bar"><div class="score-label">A tua pontuação</div><div class="score-val" id="scoreDisplay">0 / 5</div></div>
+        <div class="question-card" id="q1-card"><div class="q-num">Pergunta 01 / 05</div><div class="q-text">Qual tecnologia renovável é mais vulnerável à redução de precipitação em Portugal?</div><div class="q-options"><button class="q-opt" onclick="answer(1,'A',false)"><span class="opt-letter">A</span>Energia Solar</button><button class="q-opt" onclick="answer(1,'B',false)"><span class="opt-letter">B</span>Energia Eólica</button><button class="q-opt" onclick="answer(1,'C',true)"><span class="opt-letter">C</span>Energia Hídrica</button><button class="q-opt" onclick="answer(1,'D',false)"><span class="opt-letter">D</span>Energia Geotérmica</button></div><div class="q-feedback correct" id="q1-ok">✅ Correto! A hídrica depende diretamente dos caudais dos rios.</div><div class="q-feedback wrong" id="q1-no">❌ Errado. A resposta correta é a Energia Hídrica.</div></div>
+        <div class="question-card" id="q2-card"><div class="q-num">Pergunta 02 / 05</div><div class="q-text">O que acontece à eficiência dos painéis solares quando a temperatura aumenta?</div><div class="q-options"><button class="q-opt" onclick="answer(2,'A',false)"><span class="opt-letter">A</span>Aumenta — mais calor = mais energia</button><button class="q-opt" onclick="answer(2,'B',true)"><span class="opt-letter">B</span>Diminui — cerca de 0.5% por grau Celsius</button><button class="q-opt" onclick="answer(2,'C',false)"><span class="opt-letter">C</span>Mantém-se igual</button><button class="q-opt" onclick="answer(2,'D',false)"><span class="opt-letter">D</span>Aumenta até 40°C, depois diminui</button></div><div class="q-feedback correct" id="q2-ok">✅ Correto! É o paradoxo solar: mais sol mas painéis menos eficientes com o calor.</div><div class="q-feedback wrong" id="q2-no">❌ Errado. A temperatura alta reduz a eficiência em ~0.5% por °C.</div></div>
+        <div class="question-card" id="q3-card"><div class="q-num">Pergunta 03 / 05</div><div class="q-text">O que significa o cenário climático RCP 8.5?</div><div class="q-options"><button class="q-opt" onclick="answer(3,'A',false)"><span class="opt-letter">A</span>Redução de 8.5% nas emissões até 2050</button><button class="q-opt" onclick="answer(3,'B',false)"><span class="opt-letter">B</span>Aumento de temperatura de 8.5°C</button><button class="q-opt" onclick="answer(3,'C',true)"><span class="opt-letter">C</span>Cenário de altas emissões sem mitigação</button><button class="q-opt" onclick="answer(3,'D',false)"><span class="opt-letter">D</span>Concentração de CO₂ de 850 ppm em 2050</button></div><div class="q-feedback correct" id="q3-ok">✅ Correto! RCP 8.5 é o pior cenário — sem políticas de mitigação.</div><div class="q-feedback wrong" id="q3-no">❌ Errado. RCP 8.5 representa o cenário de altas emissões sem mitigação.</div></div>
+        <div class="question-card" id="q4-card"><div class="q-num">Pergunta 04 / 05</div><div class="q-text">Qual a redução esperada na produção hídrica de Portugal até 2050?</div><div class="q-options"><button class="q-opt" onclick="answer(4,'A',false)"><span class="opt-letter">A</span>Cerca de 5%</button><button class="q-opt" onclick="answer(4,'B',false)"><span class="opt-letter">B</span>Cerca de 10%</button><button class="q-opt" onclick="answer(4,'C',true)"><span class="opt-letter">C</span>Até 25%</button><button class="q-opt" onclick="answer(4,'D',false)"><span class="opt-letter">D</span>Mais de 50%</button></div><div class="q-feedback correct" id="q4-ok">✅ Correto! As projeções apontam para uma perda de até 25%.</div><div class="q-feedback wrong" id="q4-no">❌ Errado. As projeções indicam uma redução de até 25%.</div></div>
+        <div class="question-card" id="q5-card"><div class="q-num">Pergunta 05 / 05</div><div class="q-text">Qual a meta de energia renovável de Portugal até 2030?</div><div class="q-options"><button class="q-opt" onclick="answer(5,'A',false)"><span class="opt-letter">A</span>50% da eletricidade</button><button class="q-opt" onclick="answer(5,'B',true)"><span class="opt-letter">B</span>80% da eletricidade</button><button class="q-opt" onclick="answer(5,'C',false)"><span class="opt-letter">C</span>100% da eletricidade</button><button class="q-opt" onclick="answer(5,'D',false)"><span class="opt-letter">D</span>65% da eletricidade</button></div><div class="q-feedback correct" id="q5-ok">✅ Correto! Portugal tem como meta 80% de eletricidade renovável até 2030.</div><div class="q-feedback wrong" id="q5-no">❌ Errado. A meta portuguesa é de 80% de eletricidade renovável até 2030.</div></div>
+    </div>
+
+    <div class="screen" id="s-hottakes">
+        <div class="sec-tag">Participa ao vivo</div><div class="screen-title">Hot Takes 🔥</div><div class="screen-sub">Posiciona-te em cada afirmação!</div>
+        <div class="take-card"><div class="take-q">"A energia nuclear é indispensável para combater as alterações climáticas."</div><div class="take-btns"><button class="take-btn agree" onclick="hotTake(1,'agree',this)"><div class="t-icon">✅</div><div class="t-label">Concordo</div></button><button class="take-btn disagree" onclick="hotTake(1,'disagree',this)"><div class="t-icon">❌</div><div class="t-label">Discordo</div></button><button class="take-btn neutral" onclick="hotTake(1,'neutral',this)"><div class="t-icon">🤔</div><div class="t-label">Dúvidas</div></button></div><div class="take-voted-msg" id="ht1-msg">✓ Resposta registada!</div></div>
+        <div class="take-card"><div class="take-q">"Portugal tem recursos suficientes para ser 100% renovável até 2040."</div><div class="take-btns"><button class="take-btn agree" onclick="hotTake(2,'agree',this)"><div class="t-icon">✅</div><div class="t-label">Concordo</div></button><button class="take-btn disagree" onclick="hotTake(2,'disagree',this)"><div class="t-icon">❌</div><div class="t-label">Discordo</div></button><button class="take-btn neutral" onclick="hotTake(2,'neutral',this)"><div class="t-icon">🤔</div><div class="t-label">Dúvidas</div></button></div><div class="take-voted-msg" id="ht2-msg">✓ Resposta registada!</div></div>
+        <div class="take-card"><div class="take-q">"A hídrica vai ser a maior vítima das alterações climáticas em Portugal."</div><div class="take-btns"><button class="take-btn agree" onclick="hotTake(3,'agree',this)"><div class="t-icon">✅</div><div class="t-label">Concordo</div></button><button class="take-btn disagree" onclick="hotTake(3,'disagree',this)"><div class="t-icon">❌</div><div class="t-label">Discordo</div></button><button class="take-btn neutral" onclick="hotTake(3,'neutral',this)"><div class="t-icon">🤔</div><div class="t-label">Dúvidas</div></button></div><div class="take-voted-msg" id="ht3-msg">✓ Resposta registada!</div></div>
+        <div class="take-card"><div class="take-q">"Sem armazenamento de energia, as renováveis nunca vão ser suficientes."</div><div class="take-btns"><button class="take-btn agree" onclick="hotTake(4,'agree',this)"><div class="t-icon">✅</div><div class="t-label">Concordo</div></button><button class="take-btn disagree" onclick="hotTake(4,'disagree',this)"><div class="t-icon">❌</div><div class="t-label">Discordo</div></button><button class="take-btn neutral" onclick="hotTake(4,'neutral',this)"><div class="t-icon">🤔</div><div class="t-label">Dúvidas</div></button></div><div class="take-voted-msg" id="ht4-msg">✓ Resposta registada!</div></div>
+    </div>
+
+    <div class="screen" id="s-vote">
+        <div class="sec-tag">Votação final</div><div class="screen-title">Qual é a mais resiliente?</div><div class="screen-sub">Após os pitches de 60s, vota aqui.</div>
+        <div id="vote-options">
+            <div class="vote-card" onclick="finalVote('solar',this)"><div class="vote-emoji">☀️</div><div class="vote-name">Energia Solar</div><div class="vote-hint">Mais irradiação, desafio de temperatura</div></div>
+            <div class="vote-card" onclick="finalVote('wind',this)"><div class="vote-emoji">💨</div><div class="vote-name">Energia Eólica</div><div class="vote-hint">Variabilidade vs. potencial costeiro</div></div>
+            <div class="vote-card" onclick="finalVote('hydro',this)"><div class="vote-emoji">💧</div><div class="vote-name">Energia Hídrica</div><div class="vote-hint">Seca crescente, gestão de reservatórios</div></div>
+        </div>
+        <div class="voted-confirm" id="vote-confirm">🏆 Voto registado! Aguarda o resultado no ecrã principal.</div>
+    </div>
+
+    <nav class="bottom-nav" id="bottomNav">
+        <button class="nav-item active" onclick="goTo('s-agenda',this)"><span class="icon">📅</span>Programa</button>
+        <button class="nav-item" onclick="goTo('s-conteudo',this)"><span class="icon">📚</span>Conteúdo</button>
+        <button class="nav-item" onclick="goTo('s-quiz',this)"><span class="icon">🧠</span>Quiz</button>
+        <button class="nav-item" onclick="goTo('s-hottakes',this)"><span class="icon">🔥</span>Hot Takes</button>
+        <button class="nav-item" onclick="goTo('s-vote',this)"><span class="icon">🗳️</span>Votar</button>
+    </nav>
+
+    <script>
+  let userName='',score=0,answered={},htVoted={},finalVoted=false;
+  function safeKey(n){return n.replace(/[.#$\/\[\]]/g,'_')}
+  function db(){return window._db}
+  function joinWorkshop(){
+    const name=document.getElementById('nameInput').value.trim();
+    if(!name){document.getElementById('nameInput').focus();return}
+    userName=name;
+    const btn=document.getElementById('joinBtn');
+    btn.textContent='A entrar...';btn.disabled=true;
+    if(window._fbReady){
+      window._set(window._ref(window._db,'participants/'+safeKey(name)),{name,joined:Date.now()}).then(enterApp).catch(enterApp);
+    } else {
+      document.addEventListener('fbReady',()=>{
+        window._set(window._ref(window._db,'participants/'+safeKey(name)),{name,joined:Date.now()}).then(enterApp).catch(enterApp);
+      },{once:true});
+      setTimeout(enterApp,3000);
+    }
+  }
+  function enterApp(){
+    document.getElementById('s-welcome').classList.remove('active');
+    document.getElementById('s-agenda').classList.add('active');
+    document.getElementById('bottomNav').style.display='flex';
+  }
+  function goTo(id,btn){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');window.scrollTo(0,0);
+  }
+  function answer(qNum,letter,correct){
+    if(answered[qNum])return;answered[qNum]=true;
+    const card=document.getElementById('q'+qNum+'-card');
+    const opts=card.querySelectorAll('.q-opt');
+    opts.forEach(o=>{o.disabled=true;o.style.opacity='0.5'});
+    const letters=['A','B','C','D'];
+    const clicked=opts[letters.indexOf(letter)];clicked.style.opacity='1';
+    const correctMap={1:'C',2:'B',3:'C',4:'C',5:'B'};
+    if(correct){score++;clicked.classList.add('correct');card.querySelector('.q-feedback.correct').classList.add('show');}
+    else{clicked.classList.add('wrong');card.querySelector('.q-feedback.wrong').classList.add('show');
+      const ci=letters.indexOf(correctMap[qNum]);opts[ci].classList.add('correct');opts[ci].style.opacity='1';}
+    document.getElementById('scoreDisplay').textContent=score+' / 5';
+    if(window._fbReady&&userName){
+      window._set(window._ref(window._db,'quiz/'+safeKey(userName)+'/q'+qNum),{correct,ts:Date.now()});
+      window._set(window._ref(window._db,'quiz/'+safeKey(userName)+'/score'),score);
+    }
+  }
+  function hotTake(num,stance,btn){
+    if(htVoted[num])return;htVoted[num]=stance;
+    const card=btn.closest('.take-card');
+    card.querySelectorAll('.take-btn').forEach(b=>b.classList.add('voted'));
+    btn.classList.remove('voted');btn.style.opacity='1';
+    document.getElementById('ht'+num+'-msg').classList.add('show');
+    if(window._fbReady&&userName)window._set(window._ref(window._db,'hottakes/'+num+'/'+safeKey(userName)),{stance,ts:Date.now()});
+  }
+  function finalVote(tech,card){
+    if(finalVoted)return;finalVoted=true;
+    document.querySelectorAll('.vote-card').forEach(c=>{c.style.opacity='0.4';c.style.pointerEvents='none'});
+    card.style.opacity='1';card.classList.add('sel-'+tech);
+    document.getElementById('vote-confirm').classList.add('show');
+    if(window._fbReady&&userName)window._set(window._ref(window._db,'finalvotes/'+safeKey(userName)),{tech,ts:Date.now()});
+  }
+    </script>
+</body>
+</html>
